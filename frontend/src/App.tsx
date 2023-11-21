@@ -1,6 +1,13 @@
-import React, { useState, ChangeEvent } from 'react';
+import React, { useState, ChangeEvent, useEffect } from 'react';
 import InputForm from './InputForm';
 import PredictionResult from './PredictionResult';
+import CaseCard from './CaseCard';
+
+interface CaseCardProps {
+  title: string;
+  violation: boolean;
+  link: string;
+}
 
 interface PredictionResponse {
   prediction: string;
@@ -11,18 +18,19 @@ const App: React.FC = () => {
   const [inputText, setInputText] = useState<string>('');
   const [prediction, setPrediction] = useState<string>('');
   const [chance, setChance] = useState<number | null>(null);
-  const [loading, setLoading] = useState<boolean>(false); // Add loading state
+  const [predictionLoading, setPredictionLoading] = useState<boolean>(false);
+  const [similarCases, setSimilarCases] = useState<CaseCardProps[]>([]);
+  const [similarCasesLoading, setSimilarCasesLoading] = useState<boolean>(false);
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setInputText(e.target.value);
   };
 
-  const handleSubmit = async () => {
+  const fetchPrediction = async () => {
     try {
-      // Set loading to true before making the request
-      setLoading(true);
+      setPredictionLoading(true);
 
-      const response = await fetch('http://127.0.0.1:8000/', {
+      const predictionResponse = await fetch('http://127.0.0.1:8000/', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -30,20 +38,51 @@ const App: React.FC = () => {
         body: JSON.stringify({ inputText }),
       });
 
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+      if (!predictionResponse.ok) {
+        throw new Error('Network response for prediction was not ok');
       }
 
-      const data: PredictionResponse = await response.json();
+      const predictionData: PredictionResponse = await predictionResponse.json();
 
-      setPrediction(data.prediction);
-      setChance(data.chance);
+      setPrediction(predictionData.prediction);
+      setChance(predictionData.chance);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error fetching prediction:', error);
     } finally {
-      // Set loading back to false after the request completes
-      setLoading(false);
+      setPredictionLoading(false);
     }
+  };
+
+  const fetchSimilarCases = async () => {
+    try {
+      setSimilarCasesLoading(true);
+
+      const similarCasesResponse = await fetch('http://127.0.0.1:8000/findSimmilar', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ /* Data if required */ }),
+      });
+
+      if (!similarCasesResponse.ok) {
+        throw new Error('Network response for similar cases was not ok');
+      }
+
+      const similarCasesData = await similarCasesResponse.json();
+
+      setSimilarCases(similarCasesData.court_cases);
+    } catch (error) {
+      console.error('Error fetching similar cases:', error);
+    } finally {
+      setSimilarCasesLoading(false);
+    }
+  };
+
+  const handleSubmit = () => {
+    // Call both fetch functions independently
+    fetchPrediction();
+    fetchSimilarCases();
   };
 
   return (
@@ -51,12 +90,39 @@ const App: React.FC = () => {
       <h1 className="mb-4">Hello World</h1>
       <div className="row">
         <div className="col-md-8">
+          {/* Include InputForm component */}
           <InputForm onInputChange={handleInputChange} onSubmit={handleSubmit} />
+
+          {/* Conditional rendering for PredictionResult */}
+          {predictionLoading ? (
+            // Loading Spinner for prediction
+            <div className="d-flex justify-content-center align-items-center" style={{ height: '100px' }}>
+              <div className="spinner-border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          ) : (
+            // Display PredictionResult only if prediction is available
+            prediction !== '' && (
+              <PredictionResult prediction={prediction} chance={chance} loading={predictionLoading} />
+            )
+          )}
         </div>
-      </div>
-      <div className="row mt-3">
-        <div className="col-md-8">
-          <PredictionResult prediction={prediction} chance={chance} loading={loading} /> {/* Pass loading prop */}
+
+        <div className="col-md-4">
+          {similarCasesLoading ? (
+            // Loading Spinner for similar cases
+            <div className="d-flex justify-content-center align-items-center" style={{ height: '100px' }}>
+              <div className="spinner-border" role="status">
+                <span className="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          ) : (
+            // Display similar cases using CaseCard component
+            similarCases.map((caseData, index) => (
+              <CaseCard key={index} title={caseData.title} violation={caseData.violation} link={caseData.link} />
+            ))
+          )}
         </div>
       </div>
     </div>

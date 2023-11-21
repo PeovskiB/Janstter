@@ -43,6 +43,8 @@ const PredictionResult: React.FC<PredictionResultProps> = ({ prediction, chance,
               <h4>{Math.round((chance ?? 0) * 100)}%</h4>
             </div>
           </div>
+
+          <p>Model predicts a {chance ? `${Math.round(chance * 100)}%` : '0%'} chance for this case to have a violation</p>
         </div>
       )}
     </div>

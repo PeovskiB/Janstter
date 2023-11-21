@@ -31,16 +31,16 @@ async def root():
     c = random.uniform(0, 1)
     c = round(c, 2)
     pred = "Violation" if c > 0.5 else "Non-Violation"
-    time.sleep(2)
+    time.sleep(0.7)
     return {
         "prediction": pred,
         "chance":  c
     }
 
 
-@app.post("/getSimmilar")
+@app.post("/findSimmilar")
 async def get_simmilar():
-    time.sleep(3)
+    time.sleep(2)
     court_cases = [
         {
             "title": "Case 1: Smith v. State",
