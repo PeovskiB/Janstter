@@ -44,7 +44,7 @@ const PredictionResult: React.FC<PredictionResultProps> = ({ prediction, chance,
             </div>
           </div>
 
-          <p>Model predicts a {chance ? `${Math.round(chance * 100)}%` : '0%'} chance for this case to have a violation</p>
+          <p className="fs-4">Model predicts a {chance ? `${Math.round(chance * 100)}%` : '0%'} chance for this case to have a violation</p>
         </div>
       )}
     </div>

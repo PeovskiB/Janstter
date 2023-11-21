@@ -2,7 +2,7 @@ import random
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import time
+import asyncio
 
 app = FastAPI()
 
@@ -31,7 +31,7 @@ async def root():
     c = random.uniform(0, 1)
     c = round(c, 2)
     pred = "Violation" if c > 0.5 else "Non-Violation"
-    time.sleep(0.7)
+    await asyncio.sleep(5.6)
     return {
         "prediction": pred,
         "chance":  c
@@ -40,7 +40,7 @@ async def root():
 
 @app.post("/findSimmilar")
 async def get_simmilar():
-    time.sleep(2)
+    await asyncio.sleep(0.2)
     court_cases = [
         {
             "title": "Case 1: Smith v. State",

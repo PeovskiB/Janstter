@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent, useEffect } from 'react';
+import React, { useState, ChangeEvent} from 'react';
 import InputForm from './InputForm';
 import PredictionResult from './PredictionResult';
 import CaseCard from './CaseCard';
@@ -80,14 +80,14 @@ const App: React.FC = () => {
   };
 
   const handleSubmit = () => {
-    // Call both fetch functions independently
+    // Call both fetch functions independently without await
     fetchPrediction();
     fetchSimilarCases();
   };
 
   return (
     <div className="container mt-5">
-      <h1 className="mb-4">Hello World</h1>
+      <h1 className="mb-4">Case outcome prediction:</h1>
       <div className="row">
         <div className="col-md-8">
           {/* Include InputForm component */}
