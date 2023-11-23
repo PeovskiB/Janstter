@@ -1,8 +1,10 @@
 import random
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
+
+import embedding_service, prediction_service
 
 app = FastAPI()
 
@@ -26,15 +28,18 @@ async def say_hello(name: str):
 
 
 @app.post("/")
-async def root():
-    #TODO: rename chance to prob
-    c = random.uniform(0, 1)
-    c = round(c, 2)
-    pred = "Violation" if c > 0.5 else "Non-Violation"
-    await asyncio.sleep(5.6)
+async def root(data: dict):
+    text = data.get("text")
+    if text is None:
+        raise HTTPException(status_code=400, detail="Missing 'text' field in request JSON")
+
+    embedding = embedding_service.get_text_embedding(text)
+    prob = prediction_service.get_prediction(embedding)
+    prob = float(prob)
+    pred = "Violation" if prob > 0.5 else "Non-Violation"
     return {
         "prediction": pred,
-        "chance":  c
+        "chance": prob
     }
 
 

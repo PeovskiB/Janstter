@@ -35,7 +35,7 @@ const App: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ inputText }),
+        body: JSON.stringify({ "text" : inputText }),
       });
 
       if (!predictionResponse.ok) {
