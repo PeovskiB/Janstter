@@ -14,6 +14,9 @@ def init_db():
     vecs = df['ada_embedding'].apply(lambda x: [float(v) for v in x.strip('[]').split(',')] if isinstance(x, str) else x).tolist()
     payload = [{'link': link, 'outcome': label} for link, label in zip(df['Page Link'], df['label'])]
 
+    print(client.get_collections().collections)
+    if len(client.get_collections().collections) > 0:
+        return "Database has already been initialized"
     client.create_collection(
         collection_name=col_name,
         vectors_config=models.VectorParams(size=1536, distance=models.Distance.COSINE)
@@ -26,6 +29,7 @@ def init_db():
             payloads=payload
         )
     )
+    return "Database init successful"
 
 def get_most_similar(embed, limit=3):
     result = client.search(
