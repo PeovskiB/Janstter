@@ -4,3 +4,5 @@ tiktoken==0.5.1
 tenacity
 numpy
 tensorflow
+qdrant-client
+pandas

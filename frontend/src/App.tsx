@@ -62,7 +62,7 @@ const App: React.FC = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ /* Data if required */ }),
+        body: JSON.stringify({ "text" : inputText }),
       });
 
       if (!similarCasesResponse.ok) {
