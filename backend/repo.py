@@ -13,7 +13,7 @@ def init_db():
     #vecs = df['Embedding'].tolist()
     #vecs = df['Embedding'].apply(lambda x: [float(v) for v in x.strip('[]').split(',')] if isinstance(x, str) else x).tolist()
     vecs = [list(map(float, v.strip('[]').split())) for v in df['Embedding']]
-    payload = [{'link': link, 'outcome': label, 'itemid': itemid} for link, label, itemid in zip(df['Page Link'], df['label'], df['itemid'])]
+    payload = [{'link': link, 'outcome': label, 'itemid': itemid, 'violations': violations, 'non_violations': non_violations} for link, label, itemid, violations, non_violations in zip(df['Page Link'], df['label'], df['itemid'], df['Violations'], df['Non-Violations'])]
 
     print(client.get_collections().collections)
     if len(client.get_collections().collections) > 0:
@@ -43,15 +43,20 @@ def get_most_similar(embed, limit=3):
 
     for scored_point in result:
         link = scored_point.payload.get('link', '')
+        case_id = scored_point.payload.get('itemid', '')
         outcome = scored_point.payload.get('outcome', None)
 
         # Adjust the logic to determine the violation based on the 'outcome' value
         violation = True if outcome == 1 else False if outcome == 0 else None
 
+        violations = scored_point.payload.get('violations', '')
+        non_violations = scored_point.payload.get('non_violations', '')
         court_case = {
-            "title": f"Case {scored_point.id}",
-            "violation": violation,
-            "link": link
+            "title": f"Case {case_id}",
+            "has_violation": violation,
+            "link": link,
+            "violations": violations,
+            "non_violations": non_violations
         }
 
         court_cases.append(court_case)
