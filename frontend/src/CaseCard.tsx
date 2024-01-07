@@ -17,28 +17,45 @@ const CaseCard: React.FC<CaseCardProps> = ({ title, violation, link, violations,
   return (
     <div className="card mb-3">
       <div className="card-body">
-        <h5 className="card-title">{title}</h5>
-        <p className="card-text">Outcome: {!violation ? 'Violation' : 'Non-Violation'}</p>
-        <div className="d-flex">
+        <h4 className="card-title">{title}</h4>
+        <p className="card-text">
+          <strong>Outcome:</strong>{' '}
+          {!violation ? (
+            <Badge bg="danger" className="mr-1" style={{ fontSize: '1.2rem', margin: '3px' }}>
+              Violation
+            </Badge>
+          ) : (
+            <Badge bg="success" className="mr-1" style={{ fontSize: '1.2rem', margin: '3px' }}>
+              Non-Violation
+            </Badge>
+          )}
+        </p>
+        <p className="card-text">
           {parsedViolations.length > 0 && (
-            <div className="mr-2">
-              {parsedViolations.map((violation, index) => (
-                <Badge key={index} bg="danger" className="mr-1" style={{ fontSize: '1.2rem', margin: '2px' }}>
-                  {violation}
-                </Badge>
-              ))}
-            </div>
+            <>
+              <strong>Articles:</strong>{' '}
+              <div className="mr-2">
+                {parsedViolations.map((violation, index) => (
+                  <Badge key={index} bg="danger" className="mr-1" style={{ fontSize: '1.2rem', margin: '3px' }}>
+                    {violation}
+                  </Badge>
+                ))}
+              </div>
+            </>
           )}
           {parsedNonViolations.length > 0 && (
-            <div className="mr-2">
-              {parsedNonViolations.map((nonViolation, index) => (
-                <Badge key={index} bg="success" className="mr-1" style={{ fontSize: '1.2rem', margin: '2px' }}>
-                  {nonViolation}
-                </Badge>
-              ))}
-            </div>
+            <>
+              <strong>Articles:</strong>{' '}
+              <div className="mr-2">
+                {parsedNonViolations.map((nonViolation, index) => (
+                  <Badge key={index} bg="success" className="mr-1" style={{ fontSize: '1.2rem', margin: '3px' }}>
+                    {nonViolation}
+                  </Badge>
+                ))}
+              </div>
+            </>
           )}
-        </div>
+        </p>
         <Button variant="primary" href={link} target="_blank" rel="noopener noreferrer">
           View Case
         </Button>
