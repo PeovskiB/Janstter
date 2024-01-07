@@ -7,19 +7,20 @@ client = QdrantClient(host="localhost", port=6333)
 col_name = "cases"
 
 def init_db():
-    df = pd.read_csv('mock_db.csv')
+    df = pd.read_csv('db.csv')
 
     index = list(range(len(df)))
-    #vecs = df['ada_embedding'].tolist()
-    vecs = df['ada_embedding'].apply(lambda x: [float(v) for v in x.strip('[]').split(',')] if isinstance(x, str) else x).tolist()
-    payload = [{'link': link, 'outcome': label} for link, label in zip(df['Page Link'], df['label'])]
+    #vecs = df['Embedding'].tolist()
+    #vecs = df['Embedding'].apply(lambda x: [float(v) for v in x.strip('[]').split(',')] if isinstance(x, str) else x).tolist()
+    vecs = [list(map(float, v.strip('[]').split())) for v in df['Embedding']]
+    payload = [{'link': link, 'outcome': label, 'itemid': itemid} for link, label, itemid in zip(df['Page Link'], df['label'], df['itemid'])]
 
     print(client.get_collections().collections)
     if len(client.get_collections().collections) > 0:
         return "Database has already been initialized"
     client.create_collection(
         collection_name=col_name,
-        vectors_config=models.VectorParams(size=1536, distance=models.Distance.COSINE)
+        vectors_config=models.VectorParams(size=768, distance=models.Distance.COSINE)
     )
     client.upsert(
         collection_name=col_name,

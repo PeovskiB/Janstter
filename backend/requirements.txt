@@ -6,3 +6,7 @@ numpy
 tensorflow
 qdrant-client
 pandas
+
+#Novi
+transformers
+torch
