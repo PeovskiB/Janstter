@@ -1,11 +1,4 @@
-import openai
-from tenacity import retry, wait_random_exponential, stop_after_attempt, retry_if_not_exception_type
-from openai import OpenAI
-import os
-from dotenv import load_dotenv
-import tiktoken
-from itertools import islice
-import numpy as np
+
 from transformers import AutoModel
 import torch
 

@@ -1,8 +1,7 @@
-import random
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import asyncio
+
 
 import embedding_service, prediction_service, repo
 
