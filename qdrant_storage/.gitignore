@@ -1,0 +1,3 @@
+# .gitignore
+raft_state.json
+aliases/data.json

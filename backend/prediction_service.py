@@ -3,7 +3,7 @@ from tensorflow.keras.models import Sequential, load_model
 from tensorflow.keras.layers import Dense, Dropout
 from ast import literal_eval
 
-model_filename='saved_model2.h5'
+model_filename='saved_model3.h5'
 loaded_model = load_model(model_filename)
 
 def __load_and_predict_probabilities_single_sample(sample):

@@ -7,11 +7,23 @@ interface CaseCardProps {
   title: string;
   violation: boolean;
   link: string;
+  violations: string;
+  nonViolations: string;
 }
 
 interface PredictionResponse {
   prediction: string;
   chance: number;
+}
+
+// Define an interface that matches the structure of the objects you are receiving from the server
+interface CourtCaseFromServer {
+  title: string;
+  has_violation: boolean;
+  chance: number;
+  link: string;
+  violations: string; // Assuming this is a JSON string representing an array
+  non_violations: string; // Also a JSON string representing an array
 }
 
 const App: React.FC = () => {
@@ -56,7 +68,7 @@ const App: React.FC = () => {
   const fetchSimilarCases = async () => {
     try {
       setSimilarCasesLoading(true);
-
+  
       const similarCasesResponse = await fetch('http://127.0.0.1:8000/findSimmilar', {
         method: 'POST',
         headers: {
@@ -64,14 +76,20 @@ const App: React.FC = () => {
         },
         body: JSON.stringify({ "text" : inputText }),
       });
-
+  
       if (!similarCasesResponse.ok) {
         throw new Error('Network response for similar cases was not ok');
       }
-
-      const similarCasesData = await similarCasesResponse.json();
-
-      setSimilarCases(similarCasesData.court_cases);
+  
+      const similarCasesData: { court_cases: CourtCaseFromServer[] } = await similarCasesResponse.json();
+  
+      setSimilarCases(similarCasesData.court_cases.map((courtCase): CaseCardProps => ({
+        title: courtCase.title,
+        violation: !courtCase.has_violation,
+        link: courtCase.link,
+        violations: courtCase.violations, // assuming this is a string
+        nonViolations: courtCase.non_violations, // assuming this is a string
+      })));
     } catch (error) {
       console.error('Error fetching similar cases:', error);
     } finally {
@@ -120,7 +138,14 @@ const App: React.FC = () => {
           ) : (
             // Display similar cases using CaseCard component
             similarCases.map((caseData, index) => (
-              <CaseCard key={index} title={caseData.title} violation={caseData.violation} link={caseData.link} />
+              <CaseCard
+                key={index}
+                title={caseData.title}
+                violation={caseData.violation}
+                link={caseData.link}
+                violations={caseData.violations}
+                nonViolations={caseData.nonViolations}
+              />
             ))
           )}
         </div>

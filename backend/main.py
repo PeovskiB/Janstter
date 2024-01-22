@@ -1,8 +1,7 @@
-import random
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-import asyncio
+
 
 import embedding_service, prediction_service, repo
 
@@ -22,10 +21,14 @@ async def root():
     return {"message": "Hello World"}
 
 
-@app.get("/hello/{name}")
-async def say_hello(name: str):
-    repo.init_db()
-    return {"message": f"Hello {name}"}
+@app.post("/initdb")
+async def say_hello(data: dict):
+    pswrd = data.get("password")
+    if pswrd == "admin":
+        msg = repo.init_db()
+        if msg is not None:
+            return {"message": msg}
+    return {"message": f"Wrong password"}
 
 
 @app.post("/")
