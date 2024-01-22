@@ -1,21 +1,28 @@
-# Use an official Node.js image as a parent image
-FROM node:18.16.0-alpine3.18
+FROM node:18-alpine
 
-# Set the working directory to /app
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy package.json and package-lock.json to the working directory
+# Copy package.json and package-lock.json (or npm-shrinkwrap.json, yarn.lock)
 COPY package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy the rest of the application code to the working directory
+# Copy the rest of the application files to the container
 COPY . .
 
-# Expose port 3000 (or the port your app is running on)
-EXPOSE 3000
-EXPOSE 5173
+# Build the TypeScript code
+RUN npm run build
 
-# Command to run the application
-CMD ["npm", "run", "dev"]
+# Install serve globally for production deployment
+RUN npm install -g serve
+
+# Expose the port on which your application will run
+EXPOSE 3000
+
+# Set the NODE_ENV to production
+ENV NODE_ENV=production
+
+# Command to run the application using serve
+CMD ["serve", "-s", "dist", "-l", "3000"]

@@ -2,7 +2,8 @@ from qdrant_client import QdrantClient
 from qdrant_client import models
 import pandas as pd
 
-client = QdrantClient(host="localhost", port=6333)
+client = QdrantClient(host="database", port=6333)
+print("Connecting to host=database, port=6333")
 
 col_name = "cases"
 
